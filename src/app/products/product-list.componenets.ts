@@ -1,5 +1,7 @@
-import { Component  } from "@angular/core";
+import { Component, OnDestroy, OnInit  } from "@angular/core";
+import { Subscription } from "rxjs";
 import { IProducts } from "./IProducts";
+import { ProductService } from "./Product.Service";
 
 
 @Component({
@@ -7,12 +9,37 @@ import { IProducts } from "./IProducts";
      templateUrl : './product-list.component.html'
 })
 
-export class ProductListComponent{
-    pageTitle: string = 'Product List';
+export class ProductListComponent implements OnInit, OnDestroy{
+   pageTitle: string = 'Product List';
     showImage: boolean = false;
+    errorMessage: string = ''
+    sub!: Subscription;
+    private _listFilter : string = '';
+
+   constructor(private productService: ProductService){
+
+    productService = productService;
+   }
 
 
- private _listFilter : string = '';
+   ngOnInit(): void {
+      this.sub = this.productService.getProduct().subscribe({
+        next: products => {this.products = products;
+           this.filteredProducts = this.products;
+        },
+        error: err => this.errorMessage
+       });
+    }
+
+
+   ngOnDestroy(): void {
+     this.sub.unsubscribe();
+   }
+
+ 
+
+
+
  get listFilter(): string {
     return this._listFilter;
  }
@@ -27,32 +54,7 @@ export class ProductListComponent{
 
 
 
-    products: IProducts[] = [
-        {
-            "productId" : 2,
-            "productName" : "StarLink",
-            "productCode" : "Gn-0023",
-            "price" : 32.99,
-            "starRating" : 4.2,
-            "releaseDate" : "March 18, 2012"
-        },
-        {
-            "productId" : 3,
-            "productName" : "Iphone",
-            "productCode" : "Gn-0023",
-            "price" : 3.99,
-            "starRating" : 4.2,
-            "releaseDate" : "March 18, 2012"
-        },
-        {
-            "productId" : 4,
-            "productName" : "wheel cart",
-            "productCode" : "Gn-0023",
-            "price" : 10.99,
-            "starRating" : 4.2,
-            "releaseDate" : "March 18, 2023"
-        }
-    ];
+    products: IProducts[] = [];
 
     toggleImage() : void {
         this.showImage = !this.showImage;
@@ -65,10 +67,7 @@ export class ProductListComponent{
         product.productName.toLocaleLowerCase().includes(filterBy));
     }
 
-     ngOnInit(): void {
-        this.listFilter = 'cart';
-     }
-
+  
      onRatingClicked(message: string): void {
         this.pageTitle = 'Product List: ' + message
 
