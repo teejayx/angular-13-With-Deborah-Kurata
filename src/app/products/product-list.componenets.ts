@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit  } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Subscription } from "rxjs";
 import { IProducts } from "./IProducts";
 import { ProductService } from "./Product.Service";
@@ -16,7 +17,8 @@ export class ProductListComponent implements OnInit, OnDestroy{
     sub!: Subscription;
     private _listFilter : string = '';
 
-   constructor(private productService: ProductService){
+   constructor( private route: ActivatedRoute,
+      private router: Router, private productService: ProductService){
 
     productService = productService;
    }
@@ -72,4 +74,9 @@ export class ProductListComponent implements OnInit, OnDestroy{
         this.pageTitle = 'Product List: ' + message
 
      }
+     ViewDetails(product: any): void {
+      
+      this.router.navigateByUrl('product/:id',  { state: product  });
+     }
+
 }

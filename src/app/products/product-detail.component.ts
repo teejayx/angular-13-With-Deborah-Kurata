@@ -8,5 +8,18 @@ import { Component } from '@angular/core';
 export class ProductDetailComponent {
 
   pageTitle: string = 'Product Detail'
+  public state: any;
+
+  ngOnInit(): void {
+
+   this.state = window.history.state;
+   console.log(JSON.stringify(this.state));
+   console.log(this.state);
+
+  }
+
+  ViewDetails(): void {
+    console.log(this.state);
+  }
 
 }
